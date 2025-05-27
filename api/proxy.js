@@ -1,4 +1,5 @@
 // api/proxy.js
+
 export default async function handler(req, res) {
   const targetUrl = req.query.url;
 
@@ -7,19 +8,23 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Realizamos la petición a la URL objetivo
     const response = await fetch(targetUrl, {
       headers: {
-        'User-Agent': 'ProxyMediaHorizon',
+        'User-Agent': 'ProxyMediaHorizon', // Puedes cambiar o eliminar esta cabecera si quieres
         'Accept': '*/*',
-      }
+      },
     });
 
+    // Obtenemos el tipo de contenido para pasarlo en la respuesta
     const contentType = response.headers.get('content-type') || 'text/plain';
     res.setHeader('Content-Type', contentType);
+
+    // Obtenemos los datos como arrayBuffer y los enviamos
     const data = await response.arrayBuffer();
     res.status(200).send(Buffer.from(data));
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("Error en proxy:", error);
     res.status(500).json({ error: "Error al hacer la petición" });
   }
 }
